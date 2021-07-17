@@ -57,7 +57,8 @@ func notifyStatus(s ServerStatus) {
 	battleStatus++
 
 	// If battle status has been ok for 2 consecutive status check, send a notification message
+	log.Println("Battle service status: OK")
 	if battleStatus == 2 {
-		_ = beeep.Notify("Battle service status: OK", "You may try playing the game now", "assets/logo.png")
+		_ = beeep.Notify("Battle service running", "You may try playing the game now", "assets/logo.png")
 	}
 }
