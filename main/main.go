@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gen2brain/beeep"
 	"log"
 	"net/http"
@@ -29,6 +30,7 @@ func checkStatus(t time.Time) {
 	// Send the request to the axie.zone endpoint
 	res, err := http.Get("https://axie.zone:3000/server_status")
 	if err != nil {
+		battleStatus = 0
 		log.Println("Endpoint not responding")
 		return
 	}
@@ -37,6 +39,7 @@ func checkStatus(t time.Time) {
 	var s ServerStatus
 	err = json.NewDecoder(res.Body).Decode(&s)
 	if err != nil {
+		battleStatus = 0
 		log.Println("Error while parsing response body")
 		return
 	}
@@ -51,14 +54,15 @@ func notifyStatus(s ServerStatus) {
 	// Update the battle status count based on the response
 	if s.StatusBattles == 0 {
 		battleStatus = 0
-		log.Println("Battle service status: down / not responding")
+		fmt.Println("Battle service status: down / not responding")
 		return
 	}
 	battleStatus++
 
 	// If battle status has been ok for 2 consecutive status check, send a notification message
-	log.Println("Battle service status: OK")
+	fmt.Println("Battle service status: OK")
 	if battleStatus == 2 {
+		log.Println("Sending notification")
 		_ = beeep.Notify("Battle service running", "You may try playing the game now", "assets/logo.png")
 	}
 }
